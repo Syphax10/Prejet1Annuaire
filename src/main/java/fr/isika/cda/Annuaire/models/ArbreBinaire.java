@@ -1,7 +1,6 @@
 package fr.isika.cda.Annuaire.models;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class ArbreBinaire {
 	public void addStagiare(Stagiaire stagiaireToAdd) throws IOException {
 		if (rafFichierDom.getRaf().length() != 0) {
 			rafFichierDom.getRaf().seek(0);
-			Noeud firstNoeud = rafFichierDom.readNoeud();
+			Noeud firstNoeud = rafFichierDom.lectureNoeud();
 			firstNoeud.addNoeud(stagiaireToAdd, rafFichierDom);
 		} else {
 			rafFichierDom.getRaf().seek(0);
@@ -26,10 +25,10 @@ public class ArbreBinaire {
 		}
 	}
 	
-	public void odreAlphabetique(List<Stagiaire> stagiaireList) throws IOException {
+	public void ordreAlphabetique(List<Stagiaire> stagiaireList) throws IOException {
 		if (rafFichierDom.getRaf().length() != 0) {
 			rafFichierDom.getRaf().seek(0);
-			Noeud firstNoeud = rafFichierDom.readNoeud();
+			Noeud firstNoeud = rafFichierDom.lectureNoeud();
 			firstNoeud.ordreAlphabetique(stagiaireList, rafFichierDom);
 		}
 	}
@@ -38,33 +37,19 @@ public class ArbreBinaire {
 	public void searchStagiaire(List<Stagiaire>resultatList,Stagiaire stagiaireSearch) throws IOException {
 		if (rafFichierDom.getRaf().length() != 0) {
 			rafFichierDom.getRaf().seek(0);
-			Noeud firstNoeud = rafFichierDom.readNoeud();
-			firstNoeud.searchStagiaire(resultatList,stagiaireSearch, rafFichierDom);
+			Noeud firstNoeud = rafFichierDom.lectureNoeud();
+			firstNoeud.searchStagiere(resultatList,stagiaireSearch, rafFichierDom);
 		} else {
 			System.out.println("Ce fichier ne contient aucun stagiaire");
 		}
 	}
 	
-	 public void dbtRechAv(List<Stagiaire> searchAvancee ,Stagiaire stagiaireToFind) throws IOException {
-	        List<Stagiaire> ordreAlph = new ArrayList<>();
-
-	        if (rafFichierDom.getRaf().length() != 0) {
-	            rafFichierDom.getRaf().seek(0);
-	            Noeud firstNoeud = rafFichierDom.readNoeud();
-	            firstNoeud.ordreAlphabetique(ordreAlph, rafFichierDom);
-	            for(Stagiaire stagiaire : ordreAlph) {
-	                stagiaire.searchAvancee(searchAvancee, stagiaireToFind);
-	            }
-	        } else {
-	            //retour visuel, fichier vide
-	            System.out.println("Aucun stagiaire ne correspond aux infomation fourni.");
-	        }
-	    }
+	 
 	 //Supprimer stagiaire
-	    public void supprimerUnStagiaire(Stagiaire stagiaireToDelete) throws IOException {
+	    public void deleteStagiaire(Stagiaire stagiaireToDelete) throws IOException {
 	        if (rafFichierDom.getRaf().length() != 0) {
 	            rafFichierDom.getRaf().seek(0);
-	            Noeud firstNoeud = rafFichierDom.readNoeud();
+	            Noeud firstNoeud = rafFichierDom.lectureNoeud();
 	            firstNoeud.deleteNoeud(stagiaireToDelete, rafFichierDom);
 	        }
 	    }
@@ -74,7 +59,7 @@ public class ArbreBinaire {
 
 	        if (stagiaireToEdit.compareTo(stagiaireUpdated) != 0) {
 	            if (rafFichierDom.getRaf().length() != 0) {
-	                addStagiaire(stagiaireUpdated);
+	                addStagiare(stagiaireUpdated);
 	                deleteStagiaire(stagiaireToEdit);
 	            }
 	        }

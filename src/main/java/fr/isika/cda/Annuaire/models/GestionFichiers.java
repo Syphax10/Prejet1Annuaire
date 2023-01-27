@@ -8,123 +8,91 @@ import java.io.RandomAccessFile;
 import java.util.RandomAccess;
 
 public class GestionFichiers {
+	
+	private  RandomAccessFile raf;
 
-	public static void Lecture() {
-		try {
-			// objet FR pour lire le fichier (path relatif)
-			FileReader fr = new FileReader("src/STAGIAIRES.DON");
+    public GestionFichiers(String cheminFichier) throws FileNotFoundException {
+        raf = new RandomAccessFile(cheminFichier, "rw");
+    }
 
-			// objet BR pour lire plusieurs caractères à la suite
-			BufferedReader br = new BufferedReader(fr);
+    //Méthodes Spécifiques
+    public void fermetureAccessFile() throws IOException {
+        raf.close();
+    }
 
-			String separationStagiaire;
-			String nom = "";
-			String prenom = "";
-			String dept = "";
-			String promo = "";
-			String Sannee = "";
-			int annee = 0;
+    public void verificationImportFichierDon(ArbreBinaire arbre) throws IOException {
+        if (raf.length() == 0) {
+            ecritureAPartirDuFichierDom(arbre);
+        }
+    }
 
-			while (br.ready()) {
-				// stockage du contenu lu dans les 5 variables
-				nom = br.readLine();
-				prenom = br.readLine();
-				dept = br.readLine();
-				promo = br.readLine();
-				Sannee = br.readLine();
-				annee = Integer.valueOf(Sannee);
-				separationStagiaire = br.readLine();
+    public void ecritureAPartirDuFichierDom(ArbreBinaire arbre) throws IOException {
 
-				// Attribution de ses var à un objet Stagiaire
-				Stagiaire stagiaire = new Stagiaire(nom, prenom, dept, promo, annee);
+        FileReader reader = new FileReader("src/main/resources/STAGIAIRES.DON");
+        BufferedReader br = new BufferedReader(reader);
 
-				// Affichage pour vérif de la méthode
-				System.out.println("nom =" + nom);
-				System.out.println("prenom =" + prenom);
-				System.out.println("dept =" + dept);
-				System.out.println("promo =" + promo);
-				System.out.println("annee =" + annee);
-				System.out.println(stagiaire);
-			}
+        String nom = br.readLine().trim();
+        String prenom = br.readLine().trim();
+        String departement = br.readLine().trim();
+        String promo = br.readLine().trim();
+        int anneeDeFormation = Integer.parseInt(br.readLine().trim());
+        br.readLine();
 
-			// Fermeture du flux
-			br.close();
-			fr.close();
+        new Noeud(new Stagiaire(nom, prenom, departement, promo, anneeDeFormation), -1, 0).writeNoeudBinaire(raf);
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        while (reader.ready()) {
+            nom = br.readLine().trim();
+            prenom = br.readLine().trim();
+            departement = br.readLine().trim();
+            promo = br.readLine().trim();
+            anneeDeFormation = Integer.parseInt(br.readLine().trim());
+            br.readLine();
 
-		}
-	}
+            if (!nom.equals("")) {
+                arbre.addStagiare(new Stagiaire(nom, prenom, departement, promo, anneeDeFormation));
+            }
 
-	//Le fihier doit être réécrit à chaque fois qu'on utilise l'arbre binaire
-	public void EcritureBinaire() {
+        }
 
-		// permet d'écrire les informations contenues dans l'arbre binaire dans un
-		// fichier binaire
-		// il sera modifié à chaque modification de l'arbre binaire
-		// il contient des objets de type Stagiaire
+        br.close();
+        reader.close();
+    }
 
-		RandomAccessFile raf;
-		try {
-			raf = new RandomAccessFile("src/fichiers/stagiaires.bin", "rw");
+    public Noeud lectureNoeud() throws IOException {
+        String nom = lectureAttributStringStagiaire();
+        String prenom = lectureAttributStringStagiaire();
+        String departement = lectureAttributStringStagiaire();
+        String promo = lectureAttributStringStagiaire();
+        int anneeDeFormation = raf.readInt();
 
-			// avec ArbreBinaire le nom de la classe de l'arbre binaire et lesStagiaires le
-			// nom de l'objet arbre
-			for (ArbreBinaire stagiaire : lesStagiaires) {
-				// on lui demande d'écrire les attributs de chaque stagiaire
-				// écriture du nom (méthode dans classe Stagiaire)
-				raf.writeChars(stagiaire.nomLong());
-				// idem pour les autres String
-				raf.writeChars(stagiaire.prenomLong());
-				raf.writeChars(stagiaire.deptLong());
-				raf.writeChars(stagiaire.promoLong());
-				// écriture de l'année
-				raf.writeInt(stagiaire.getAnnee());
-			}
+        int listeChainee = raf.readInt();
+        int parent = raf.readInt();
+        int filsGauche = raf.readInt();
+        int filsDroit = raf.readInt();
+        int hauteur = raf.readInt();
 
-			raf.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        Stagiaire stagiaireLu = new Stagiaire(nom, prenom, departement, promo, anneeDeFormation);
+        return new Noeud(stagiaireLu, listeChainee, parent, filsGauche, filsDroit, hauteur);
+    }
 
-	public void LectureBinaire(int numStagiaire) {
-		// permet d'aller lire et rechercher un stagiaire dans le fichier
-		RandomAccessFile raf;
-		try {
-			raf = new RandomAccessFile("src/fichiers/stagiaires.bin", "rw");
-			raf.seek((numStagiaire - 1) * Stagiaire.TAILLE_OBJET_OCTET);
-			String nomLu = "";
-			for (int i = 0; i > Stagiaire.TAILLE_NOMPRENOM_MAX; i++) {
-				nomLu += raf.readChar();
-			}
-			String prenomLu = "";
-			for (int i = 0; i > Stagiaire.TAILLE_NOMPRENOM_MAX; i++) {
-				prenomLu += raf.readChar();
-			}
-			String deptLu = "";
-			for (int i = 0; i > Stagiaire.TAILLE_DEPT_MAX; i++) {
-				deptLu += raf.readChar();
-			}
-			String promoLue = "";
-			for (int i = 0; i > Stagiaire.TAILLE_PROMO_MAX; i++) {
-				promoLue += raf.readChar();
-			}
-			int anneeLue;
-			anneeLue = raf.readInt();
-			
-			
-			System.out.println("Le stagiaire numéro " + numStagiaire + " est nom : " + nomLu + ", prénom : " + prenomLu
-					+ ", département(ou pays) : " + deptLu + ", promo : " + promoLue + ", année : " + anneeLue
-					+ ".");
+    private String lectureAttributStringStagiaire() throws IOException {
+        String attribut = "";
+        for (int i = 0; i < Stagiaire.TAILLE_OBJET_OCTET; i++) {
+            attribut += raf.readChar();
+        }
+        return attribut;
+    }
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    //getters && setters
+    public RandomAccessFile getRaf() {
+        return raf;
+    }
 
+    public void setRaf(RandomAccessFile raf) {
+        this.raf = raf;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(args);
+    }
 }
