@@ -74,6 +74,36 @@ public class GestionFichiers {
 		Stagiaire stagiaireLu = new Stagiaire(nom, prenom, departement, promo, anneeDeFormation);
 		return new Noeud(stagiaireLu, listeChainee, parent, filsGauche, filsDroit, hauteur);
 	}
+	
+	public static void EcritureBinaire(Noeud noeud, int index) {
+
+		// permet d'écrire les informations contenues dans l'arbre binaire dans un
+		// fichier binaire
+		// il sera modifié à chaque modification de l'arbre binaire
+		// il contient des objets de type Stagiaire
+
+		RandomAccessFile raf;
+		try {
+			raf = new RandomAccessFile("src/main/resources/STAGIAIRE.txt", "rw");
+			// écriture du nom (méthode dans classe Stagiaire)
+			raf.seek(index);
+			raf.writeChars(noeud.stagiaire.nomLong());// 42 octets
+			// idem pour les autres String
+			raf.writeChars(noeud.stagiaire.prenomLong()); // 40 octets
+			raf.writeChars(noeud.stagiaire.deptLong()); // 6 octets
+			raf.writeChars(noeud.stagiaire.promoLong()); // 22 octets
+			// écriture de l'année et des index des fils gauche fils droit
+			raf.writeInt(noeud.stagiaire.getAnnee()); // 4 octets
+			raf.writeInt(noeud.filsGauche); // 4 octets
+			raf.writeInt(noeud.filsDroit); // 4 octets
+			// soit une taille totale de 122 octets pour chaque noeud
+
+			raf.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	private String lectureAttributStringStagiaire() throws IOException {
 		String attribut = "";

@@ -11,15 +11,19 @@ public class Stagiaire {
 	private String dept;
 	private String promo;
 	private int annee;
+	
+	public final static int TAILLE_NOM_MAX = 21;
+	public final static int TAILLE_PRENOM_MAX = 20;
+	public final static int TAILLE_DEPT_MAX = 3;
+	public final static int TAILLE_PROMO_MAX = 11;
+	public final static int TAILLE_OBJET_OCTET = (TAILLE_NOM_MAX + TAILLE_PRENOM_MAX + TAILLE_DEPT_MAX
+			+ TAILLE_PROMO_MAX) * 2 + 4 * 3;
 
-	// Constante de taille pour le fichier binaire
-	public final static int TAILLE_NOMPRENOM_MAX = 16;
-	public final static int TAILLE_DEPT_MAX = 5;
-	public final static int TAILLE_PROMO_MAX = 10;
+	
 	// taille de l'objet stagiaire en octets 4*4 correspond à la taille de
 	// l'attribut annee en octet
-	public final static int TAILLE_OBJET_OCTET = (2 * TAILLE_NOMPRENOM_MAX + TAILLE_DEPT_MAX + TAILLE_PROMO_MAX) * 2
-			+ 4 * 4;
+	//public final static int TAILLE_OBJET_OCTET = (2 * TAILLE_NOM_MAX + TAILLE_DEPT_MAX + TAILLE_PROMO_MAX) * 2
+		//	+ 4 * 4;
 
 	// Constructeur
 
@@ -30,6 +34,8 @@ public class Stagiaire {
 		raf.writeChars(promo);
 		raf.writeInt(annee);
 	}
+	
+	
 
 	public Stagiaire(String nom, String prenom, String dept, String promo, int annee) {
 		this.nom = nom;
@@ -63,26 +69,26 @@ public class Stagiaire {
 
 	public String nomLong() {
 		String nomLong = "";
-		if (nom.length() < TAILLE_NOMPRENOM_MAX) {
+		if (nom.length() < TAILLE_NOM_MAX) {
 			nomLong = nom;
-			for (int i = nom.length(); i < TAILLE_NOMPRENOM_MAX; i++) {
+			for (int i = nom.length(); i < TAILLE_NOM_MAX; i++) {
 				nomLong += " ";
 			}
 		} else {
-			nomLong = nom.substring(0, TAILLE_NOMPRENOM_MAX);
+			nomLong = nom.substring(0, TAILLE_NOM_MAX);
 		}
 		return nomLong;
 	}
 
 	public String prenomLong() {
 		String prenomLong = "";
-		if (prenom.length() < TAILLE_NOMPRENOM_MAX) {
+		if (prenom.length() < TAILLE_NOM_MAX) {
 			prenomLong = prenom;
-			for (int i = prenom.length(); i < TAILLE_NOMPRENOM_MAX; i++) {
+			for (int i = prenom.length(); i < TAILLE_NOM_MAX; i++) {
 				prenomLong += " ";
 			}
 		} else {
-			prenomLong = prenom.substring(0, TAILLE_NOMPRENOM_MAX);
+			prenomLong = prenom.substring(0, TAILLE_NOM_MAX);
 		}
 		return prenomLong;
 	}

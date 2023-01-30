@@ -7,23 +7,21 @@ import java.util.List;
 public class Noeud {
 
 	// Les attributs
-	private int parent;
-	private int filsDroit;
-	private int filsGauche;
-	private int listeChainee;
-	private Stagiaire stagiaire;
-	private static final int LISTE_VIDE = -1;
+	public int filsDroit;
+	public int filsGauche;
+	public int suivant;
+	Stagiaire stagiaire;
+	private static final int SUIVANT_VIDE = -1;
 	private static final int FILS_NUL = -1;
 	public static final int TAILLE_INT_OCTETS = 4;
 
-	public static final int TAILLE_NOEUD_OCTETS = Stagiaire.TAILLE_OBJET_OCTET + TAILLE_INT_OCTETS * 5;
+	public static final int TAILLE_NOEUD_OCTETS = Stagiaire.TAILLE_OBJET_OCTET + TAILLE_INT_OCTETS * 3;
 
 	// Constructeur
 	public Noeud(Stagiaire stagiaire, int parent, int filsDroit, int filsGauche, int listeChainee, int hauteur) {
 		super();
 		this.stagiaire = stagiaire;
-		this.listeChainee = listeChainee;
-		this.parent = parent;
+		this.suivant = listeChainee;
 		this.filsGauche = filsGauche;
 		this.filsDroit = filsDroit;
 
@@ -32,8 +30,7 @@ public class Noeud {
 	public Noeud(Stagiaire stagiaire, int parent) {
 		super();
 		this.stagiaire = stagiaire;
-		this.listeChainee = LISTE_VIDE;
-		this.parent = parent;
+		this.suivant = SUIVANT_VIDE;
 		this.filsGauche = FILS_NUL;
 		this.filsDroit = FILS_NUL;
 
@@ -42,14 +39,13 @@ public class Noeud {
 	// Methodes
 	@Override
 	public String toString() {
-		return "Noeud{" + "stagiaire=" + stagiaire + ", listeChainee=" + listeChainee + ", parent=" + parent
+		return "Noeud{" + "stagiaire=" + stagiaire + ", suivant=" + suivant 
 				+ ", filsGauche=" + filsGauche + ", filsDroit=" + filsDroit + "}";
 	}
 
 	public void writeNoeudBinaire(RandomAccessFile raf) throws IOException {
 		this.stagiaire.writeStagiaireBinaire(raf);
-		raf.writeInt(listeChainee);
-		raf.write(parent);
+		raf.writeInt(suivant);
 		raf.writeInt(filsGauche);
 		raf.writeInt(filsDroit);
 	}
@@ -66,9 +62,9 @@ public class Noeud {
 				// Stagiaire -> liste chainee
 				Noeud noeudDeLaListeChainee = this;
 				// raf dans la liste chainee pour avoir une fin
-				while (noeudDeLaListeChainee.listeChainee != LISTE_VIDE) {
+				while (noeudDeLaListeChainee.suivant != SUIVANT_VIDE) {
 					// se mettre sur le stagiaire suivant de la liste
-					raf.seek((long) noeudDeLaListeChainee.listeChainee * TAILLE_NOEUD_OCTETS);
+					raf.seek((long) noeudDeLaListeChainee.suivant * TAILLE_NOEUD_OCTETS);
 					noeudDeLaListeChainee = rafFichierDom.lectureNoeud();
 				}
 
@@ -111,8 +107,8 @@ public class Noeud {
 
 		listStagiaire.add(stagiaire);
 
-		while (noeudDeLaListeChainee.listeChainee != LISTE_VIDE) {
-			raf.seek((long) noeudDeLaListeChainee.listeChainee * TAILLE_NOEUD_OCTETS);
+		while (noeudDeLaListeChainee.suivant != SUIVANT_VIDE) {
+			raf.seek((long) noeudDeLaListeChainee.suivant * TAILLE_NOEUD_OCTETS);
 			noeudDeLaListeChainee = rafFichierDom.lectureNoeud();
 			listStagiaire.add(noeudDeLaListeChainee.stagiaire);
 		}
@@ -134,8 +130,8 @@ public class Noeud {
 		if (stagiaireSearch.getNom().compareToIgnoreCase(this.stagiaire.getNom()) == 0) {
 			listResultats.add(this.stagiaire);
 
-			if (this.listeChainee != LISTE_VIDE) {
-				raf.seek((long) this.listeChainee * TAILLE_NOEUD_OCTETS);
+			if (this.suivant != SUIVANT_VIDE) {
+				raf.seek((long) this.suivant * TAILLE_NOEUD_OCTETS);
 				Noeud noeudSuivant = rafFichierDom.lectureNoeud();
 				noeudSuivant.searchStagiere(listResultats, stagiaireSearch, rafFichierDom);
 			}
@@ -195,7 +191,7 @@ public class Noeud {
 
 		} else { // cas où on a trouvé le nom du stagiaire à supprimer
 			// Et il correspond au noeud de l'arbrebinaire et il n'y pas de liste chainée.
-			if (this.stagiaire.compareTo(stagiaireASupprimer) == 0 && this.listeChainee == LISTE_VIDE) { // cas où le
+			if (this.stagiaire.compareTo(stagiaireASupprimer) == 0 && this.suivant == SUIVANT_VIDE) { // cas où le
 																											// stagiaire
 																											// à
 																											// supprimé
@@ -224,7 +220,7 @@ public class Noeud {
 					// endroit: le début du stagiaire à supprimer.
 					noeudDeRemplacement.stagiaire.writeStagiaireBinaire(raf);// on a écrit les informations de notre
 					// stagiaire successeur et de sa liste chaînée dans notre noeud
-					raf.writeInt(noeudDeRemplacement.listeChainee);
+					raf.writeInt(noeudDeRemplacement.suivant);
 
 					raf.seek((long) this.filsDroit * TAILLE_NOEUD_OCTETS);
 					Noeud noeudFilsDroit = rafFichierDom.lectureNoeud();
@@ -246,28 +242,28 @@ public class Noeud {
 				Noeud noeudActuel = this;
 				int indexNoeudActuel = indexDuStagiaire;
 
-				raf.seek((long) noeudActuel.listeChainee * TAILLE_NOEUD_OCTETS);
+				raf.seek((long) noeudActuel.suivant * TAILLE_NOEUD_OCTETS);
 				Noeud noeudChaineSuivant = rafFichierDom.lectureNoeud();
 
 				raf.seek((long) indexNoeudActuel * TAILLE_NOEUD_OCTETS);
 				noeudChaineSuivant.stagiaire.writeStagiaireBinaire(raf);
 
 				raf.seek((long) indexDuStagiaire * TAILLE_NOEUD_OCTETS + Stagiaire.TAILLE_OBJET_OCTET);
-				raf.writeInt(noeudChaineSuivant.listeChainee);
+				raf.writeInt(noeudChaineSuivant.suivant);
 
 			} else { // cas où le stagiaire à supprimer est dans la liste chainée mais pas au début.
 				Noeud noeudCourant = this;
 				int indexNoeudCourant = indexDuStagiaire;
-				int indexPrecedent = LISTE_VIDE;
+				int indexPrecedent = SUIVANT_VIDE;
 				while (noeudCourant.stagiaire.compareTo(stagiaireASupprimer) != 0) {
-					raf.seek((long) noeudCourant.listeChainee * TAILLE_NOEUD_OCTETS);
+					raf.seek((long) noeudCourant.suivant * TAILLE_NOEUD_OCTETS);
 					indexPrecedent = indexNoeudCourant;
-					indexNoeudCourant = noeudCourant.listeChainee;
+					indexNoeudCourant = noeudCourant.suivant;
 					noeudCourant = rafFichierDom.lectureNoeud();
 				}
 
 				raf.seek((long) indexPrecedent * TAILLE_NOEUD_OCTETS + Stagiaire.TAILLE_OBJET_OCTET);
-				raf.writeInt(noeudCourant.listeChainee);
+				raf.writeInt(noeudCourant.suivant);
 			}
 		}
 		return indexDuStagiaire;
@@ -314,11 +310,11 @@ public class Noeud {
 	}
 
 	public int getListeChainee() {
-		return listeChainee;
+		return suivant;
 	}
 
 	public void setListeChainee(int listeChainee) {
-		this.listeChainee = listeChainee;
+		this.suivant = listeChainee;
 	}
 
 }

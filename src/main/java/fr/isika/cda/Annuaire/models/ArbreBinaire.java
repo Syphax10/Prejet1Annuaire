@@ -2,6 +2,7 @@ package fr.isika.cda.Annuaire.models;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArbreBinaire {
@@ -43,6 +44,8 @@ public class ArbreBinaire {
 			System.out.println("Ce fichier ne contient aucun stagiaire");
 		}
 	}
+	
+	  
 
 	// Supprimer stagiaire
 	public void deleteStagiaire(Stagiaire stagiaireToDelete) throws IOException {
@@ -71,5 +74,6 @@ public class ArbreBinaire {
 	public void setRafFichierDom(GestionFichiers rafFichierDom) {
 		this.rafFichierDom = rafFichierDom;
 	}
+	
 
 }
