@@ -8,91 +8,91 @@ import java.io.RandomAccessFile;
 import java.util.RandomAccess;
 
 public class GestionFichiers {
-	
-	private  RandomAccessFile raf;
 
-    public GestionFichiers(String cheminFichier) throws FileNotFoundException {
-        raf = new RandomAccessFile(cheminFichier, "rw");
-    }
+	private RandomAccessFile raf;
 
-    //Méthodes Spécifiques
-    public void fermetureAccessFile() throws IOException {
-        raf.close();
-    }
+	public GestionFichiers(String cheminFichier) throws FileNotFoundException {
+		raf = new RandomAccessFile(cheminFichier, "rw");
+	}
 
-    public void verificationImportFichierDon(ArbreBinaire arbre) throws IOException {
-        if (raf.length() == 0) {
-            ecritureAPartirDuFichierDom(arbre);
-        }
-    }
+	// Méthodes Spécifiques
+	public void fermetureAccessFile() throws IOException {
+		raf.close();
+	}
 
-    public void ecritureAPartirDuFichierDom(ArbreBinaire arbre) throws IOException {
+	public void verificationImportFichierDon(ArbreBinaire arbre) throws IOException {
+		if (raf.length() == 0) {
+			ecritureAPartirDuFichierDom(arbre);
+		}
+	}
 
-        FileReader reader = new FileReader("src/main/resources/STAGIAIRES.DON");
-        BufferedReader br = new BufferedReader(reader);
+	public void ecritureAPartirDuFichierDom(ArbreBinaire arbre) throws IOException {
 
-        String nom = br.readLine().trim();
-        String prenom = br.readLine().trim();
-        String departement = br.readLine().trim();
-        String promo = br.readLine().trim();
-        int anneeDeFormation = Integer.parseInt(br.readLine().trim());
-        br.readLine();
+		FileReader reader = new FileReader("src/main/resources/STAGIAIRES.DON");
+		BufferedReader br = new BufferedReader(reader);
 
-        new Noeud(new Stagiaire(nom, prenom, departement, promo, anneeDeFormation), -1, 0).writeNoeudBinaire(raf);
+		String nom = br.readLine().trim();
+		String prenom = br.readLine().trim();
+		String departement = br.readLine().trim();
+		String promo = br.readLine().trim();
+		int anneeDeFormation = Integer.parseInt(br.readLine().trim());
+		br.readLine();
 
-        while (reader.ready()) {
-            nom = br.readLine().trim();
-            prenom = br.readLine().trim();
-            departement = br.readLine().trim();
-            promo = br.readLine().trim();
-            anneeDeFormation = Integer.parseInt(br.readLine().trim());
-            br.readLine();
+		new Noeud(new Stagiaire(nom, prenom, departement, promo, anneeDeFormation), -1).writeNoeudBinaire(raf);
 
-            if (!nom.equals("")) {
-                arbre.addStagiare(new Stagiaire(nom, prenom, departement, promo, anneeDeFormation));
-            }
+		while (reader.ready()) {
+			nom = br.readLine().trim();
+			prenom = br.readLine().trim();
+			departement = br.readLine().trim();
+			promo = br.readLine().trim();
+			anneeDeFormation = Integer.parseInt(br.readLine().trim());
+			br.readLine();
 
-        }
+			if (!nom.equals("")) {
+				arbre.addStagiare(new Stagiaire(nom, prenom, departement, promo, anneeDeFormation));
+			}
 
-        br.close();
-        reader.close();
-    }
+		}
 
-    public Noeud lectureNoeud() throws IOException {
-        String nom = lectureAttributStringStagiaire();
-        String prenom = lectureAttributStringStagiaire();
-        String departement = lectureAttributStringStagiaire();
-        String promo = lectureAttributStringStagiaire();
-        int anneeDeFormation = raf.readInt();
+		br.close();
+		reader.close();
+	}
 
-        int listeChainee = raf.readInt();
-        int parent = raf.readInt();
-        int filsGauche = raf.readInt();
-        int filsDroit = raf.readInt();
-        int hauteur = raf.readInt();
+	public Noeud lectureNoeud() throws IOException {
+		String nom = lectureAttributStringStagiaire();
+		String prenom = lectureAttributStringStagiaire();
+		String departement = lectureAttributStringStagiaire();
+		String promo = lectureAttributStringStagiaire();
+		int anneeDeFormation = raf.readInt();
 
-        Stagiaire stagiaireLu = new Stagiaire(nom, prenom, departement, promo, anneeDeFormation);
-        return new Noeud(stagiaireLu, listeChainee, parent, filsGauche, filsDroit, hauteur);
-    }
+		int listeChainee = raf.readInt();
+		int parent = raf.readInt();
+		int filsGauche = raf.readInt();
+		int filsDroit = raf.readInt();
+		int hauteur = raf.readInt();
 
-    private String lectureAttributStringStagiaire() throws IOException {
-        String attribut = "";
-        for (int i = 0; i < Stagiaire.TAILLE_OBJET_OCTET; i++) {
-            attribut += raf.readChar();
-        }
-        return attribut;
-    }
+		Stagiaire stagiaireLu = new Stagiaire(nom, prenom, departement, promo, anneeDeFormation);
+		return new Noeud(stagiaireLu, listeChainee, parent, filsGauche, filsDroit, hauteur);
+	}
 
-    //getters && setters
-    public RandomAccessFile getRaf() {
-        return raf;
-    }
+	private String lectureAttributStringStagiaire() throws IOException {
+		String attribut = "";
+		for (int i = 0; i < Stagiaire.TAILLE_OBJET_OCTET; i++) {
+			attribut += raf.readChar();
+		}
+		return attribut;
+	}
 
-    public void setRaf(RandomAccessFile raf) {
-        this.raf = raf;
-    }
-    
-    public static void main(String[] args) {
-        System.out.println(args);
-    }
+	// getters && setters
+	public RandomAccessFile getRaf() {
+		return raf;
+	}
+
+	public void setRaf(RandomAccessFile raf) {
+		this.raf = raf;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(args);
+	}
 }

@@ -12,23 +12,25 @@ public class Stagiaire {
 	private String promo;
 	private int annee;
 
-	//Constante de taille pour le fichier binaire
+	// Constante de taille pour le fichier binaire
 	public final static int TAILLE_NOMPRENOM_MAX = 16;
 	public final static int TAILLE_DEPT_MAX = 5;
 	public final static int TAILLE_PROMO_MAX = 10;
-	//taille de l'objet stagiaire en octets 4*4 correspond à la taille de l'attribut annee en octet
-	public final static int TAILLE_OBJET_OCTET = (2*TAILLE_NOMPRENOM_MAX+TAILLE_DEPT_MAX+TAILLE_PROMO_MAX)*2+4*4;
-	
+	// taille de l'objet stagiaire en octets 4*4 correspond à la taille de
+	// l'attribut annee en octet
+	public final static int TAILLE_OBJET_OCTET = (2 * TAILLE_NOMPRENOM_MAX + TAILLE_DEPT_MAX + TAILLE_PROMO_MAX) * 2
+			+ 4 * 4;
+
 	// Constructeur
-	
-	 public void writeStagiaireBinaire(RandomAccessFile raf) throws IOException {
-	        raf.writeChars(nom);
-	        raf.writeChars(prenom);
-	        raf.writeChars(dept);
-	        raf.writeChars(promo);
-	        raf.writeInt(annee);
-	    }
-	
+
+	public void writeStagiaireBinaire(RandomAccessFile raf) throws IOException {
+		raf.writeChars(nom);
+		raf.writeChars(prenom);
+		raf.writeChars(dept);
+		raf.writeChars(promo);
+		raf.writeInt(annee);
+	}
+
 	public Stagiaire(String nom, String prenom, String dept, String promo, int annee) {
 		this.nom = nom;
 		this.prenom = prenom;
@@ -38,27 +40,26 @@ public class Stagiaire {
 	}
 
 	// méthodes pour l'écriture dans le fichier binaire
-	
-	public int compareTo(Stagiaire myStagiaire) {
-        if (myStagiaire.nom.compareToIgnoreCase(this.nom) == 0) {
-            if (myStagiaire.prenom.compareToIgnoreCase(this.prenom) == 0) {
-                if (myStagiaire.dept.compareToIgnoreCase(this.dept) == 0) {
-                    if (myStagiaire.promo.compareToIgnoreCase(this.promo) == 0) {
-                        return myStagiaire.getAnnee() - this.annee;
-                    } else {
-                        return myStagiaire.promo.compareToIgnoreCase(this.promo);
-                    }
-                } else {
-                    return myStagiaire.dept.compareToIgnoreCase(this.dept);
-                }
-            } else {
-                return myStagiaire.prenom.compareToIgnoreCase(this.prenom);
-            }
-        } else {
-            return myStagiaire.nom.compareToIgnoreCase(this.nom);
-        }
-    }
 
+	public int compareTo(Stagiaire myStagiaire) {
+		if (myStagiaire.nom.compareToIgnoreCase(this.nom) == 0) {
+			if (myStagiaire.prenom.compareToIgnoreCase(this.prenom) == 0) {
+				if (myStagiaire.dept.compareToIgnoreCase(this.dept) == 0) {
+					if (myStagiaire.promo.compareToIgnoreCase(this.promo) == 0) {
+						return myStagiaire.getAnnee() - this.annee;
+					} else {
+						return myStagiaire.promo.compareToIgnoreCase(this.promo);
+					}
+				} else {
+					return myStagiaire.dept.compareToIgnoreCase(this.dept);
+				}
+			} else {
+				return myStagiaire.prenom.compareToIgnoreCase(this.prenom);
+			}
+		} else {
+			return myStagiaire.nom.compareToIgnoreCase(this.nom);
+		}
+	}
 
 	public String nomLong() {
 		String nomLong = "";
@@ -98,8 +99,6 @@ public class Stagiaire {
 		}
 		return deptLong;
 	}
-
-
 
 	public String promoLong() {
 		String promoLong = "";
